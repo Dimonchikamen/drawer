@@ -6,40 +6,58 @@ let previousLine = { startX: 0, startY: 0, endX: 0, endY: 0 };
 const currentPosition = { x: 0, y: 0 };
 let currentLine = { startX: 0, startY: 0, endX: 0, endY: 0 };
 const lines = [];
-const radius = 10;
+const size = 28;
 
-const circlesPoints = [];
+const fieldHooksCentres = [];
+const columns = document.querySelectorAll(".table-column");
+columns.forEach((column) => {
+  const fieldHooks = column.querySelectorAll(".field-hook");
+  fieldHooks.forEach((fieldHook) =>
+    fieldHooksCentres.push({
+      id: fieldHook.dataset.id,
+      x: fieldHook.offsetLeft + size / 2 + column.offsetLeft,
+      y: fieldHook.offsetTop + size / 2 + column.offsetTop,
+    })
+  );
+});
 
-const circles = document.querySelectorAll(".circle");
-circles.forEach((c) => circlesPoints.push(fromHtmlToObjectCircle(c)));
+console.log(fieldHooksCentres);
 
 //#region helpers
+
+function findById(id) {
+  const index = fieldHooksCentres.findIndex((f) => f.id === id);
+  return fieldHooksCentres[index];
+}
+
+function lineIsExist(line) {
+  lines.some(
+    (l) =>
+      (l.startX === line.startX &&
+        l.startY === line.startY &&
+        l.endX === line.endX &&
+        l.endY === line.endY) ||
+      (l.startX === line.endX &&
+        l.startY === line.endY &&
+        l.endX === line.startX &&
+        l.endY === line.startY)
+  );
+}
+
+function isFieldHook(target) {
+  return target.classList.contains("field-hook");
+}
 
 function isCircleHtml(target) {
   return target.classList.contains("circle");
 }
 
-function fromHtmlToObjectCircle(target) {
-  return {
-    x: Number(target.dataset.x) + radius,
-    y: Number(target.dataset.y) + radius,
-    radius,
-  };
-}
-
-function mouseInCircle(mouseX, mouseY, circlePoint) {
-  const deltaX = Math.abs(circlePoint.x - mouseX);
-  const deltaY = Math.abs(circlePoint.y - mouseY);
-  return (
-    deltaX * deltaX + deltaY * deltaY <= circlePoint.radius * circlePoint.radius
-  ); //&& deltaY <= circlePoint.radius;
+function updateCanvas() {
+  ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+  drawLines();
 }
 
 //#endregion
-
-function setPreviousLine(startX, startY, endX, endY) {
-  previousLine = { startX, startY, endX, endY };
-}
 
 function saveLine(startX, startY, endX, endY) {
   lines.push({ startX, startY, endX, endY });
@@ -58,31 +76,47 @@ function drawLines() {
   );
 }
 
-canvas.addEventListener("mousedown", (e) => {
-  isMouseDown = true;
-  ctx.moveTo(e.offsetX, e.offsetY);
-  startPoint = { x: e.offsetX, y: e.offsetY };
-});
+canvas.onmousedown = function (e) {
+  console.log(e);
+  const target = e.target;
+  if (isFieldHook(target)) {
+    isMouseDown = true;
+    const center = findById(target.dataset.id);
+    ctx.moveTo(center.x, center.y);
+    startPoint = { x: center.x, y: center.y };
+  } else if (isCircleHtml(e.target)) {
+    isMouseDown = true;
+    const center = findById(target.parentElement.dataset.id);
+    ctx.moveTo(center.x, center.y);
+    startPoint = { x: center.x, y: center.y };
+  }
+};
 
-canvas.addEventListener("mousemove", (e) => {
+canvas.onmousemove = function (e) {
   const { offsetX: mouseX, offsetY: mouseY } = e;
   if (isMouseDown) {
-    if (isCircleHtml(e.target)) {
-    }
-    ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
-    drawLines();
-    const index = circlesPoints.findIndex((c) =>
-      mouseInCircle(mouseX, mouseY, c)
-    );
-    if (isCircleHtml(e.target)) {
-      const circlePoint = fromHtmlToObjectCircle(e.target);
-      drawLine(startPoint.x, startPoint.y, circlePoint.x, circlePoint.y);
-      currentLine = {
+    updateCanvas();
+    const target = e.target;
+    if (isCircleHtml(target)) {
+      const center = findById(target.parentElement.dataset.id);
+      const line = {
         startX: startPoint.x,
         startY: startPoint.y,
-        endX: circlePoint.x,
-        endY: circlePoint.y,
+        endX: center.x,
+        endY: center.y,
       };
+      drawLine(line.startX, line.startY, line.endX, line.endY);
+      currentLine = line;
+    } else if (isFieldHook(target)) {
+      const center = findById(target.dataset.id);
+      const line = {
+        startX: startPoint.x,
+        startY: startPoint.y,
+        endX: center.x,
+        endY: center.y,
+      };
+      drawLine(line.startX, line.startY, line.endX, line.endY);
+      currentLine = line;
     } else {
       drawLine(startPoint.x, startPoint.y, mouseX, mouseY);
       currentLine = {
@@ -93,18 +127,23 @@ canvas.addEventListener("mousemove", (e) => {
       };
     }
   }
-});
+};
 
-canvas.addEventListener("mouseup", (e) => {
-  if (isMouseDown) {
-    isMouseDown = false;
-    saveLine(startPoint.x, startPoint.y, currentLine.endX, currentLine.endY);
+canvas.onmouseup = function (e) {
+  const resultLine = {
+    startX: startPoint.x,
+    startY: startPoint.y,
+    endX: currentLine.endX,
+    endY: currentLine.endY,
+  };
+  if (isMouseDown && isCircleHtml(e.target) && !lineIsExist(resultLine)) {
+    saveLine(
+      resultLine.startX,
+      resultLine.startY,
+      resultLine.endX,
+      resultLine.endY
+    );
   }
-});
-
-// window.addEventListener("mouseout", (e) => {
-//   if (isMouseDown) {
-//     isMouseDown = false;
-//     saveLine(startPoint.x, startPoint.y, e.offsetX, e.offsetY);
-//   }
-// });
+  isMouseDown = false;
+  updateCanvas();
+};

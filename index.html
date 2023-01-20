@@ -1,26 +1,64 @@
 <!DOCTYPE html>
+
 <head>
   <link rel="stylesheet" href="./index.css" />
   <title>Рисовалка</title>
 </head>
+
 <body>
   <main>
     <div class="canvas-container">
       <div id="canvas-wrapper" class="canvas-wrapp">
         <canvas id="canvas" width="1600" height="900"> </canvas>
-        <div
-          style="top: 50px; left: 50px"
-          class="circle"
-          data-x="50"
-          data-y="50"
-        ></div>
-        <div
-          style="top: 100px; left: 250px"
-          class="circle"
-          data-x="250"
-          data-y="100"
-        ></div>
+        <div class="table-column" style="position: absolute; left: 200px; top: 100px; display: flex; flex-direction: column; gap: 20px">
+          <div class="schema-table">
+            <div class="schema-table_row">
+              <div style="padding: 0 10px;">field (type)</div>
+              <div class="field-hook" data-id="1">
+                <div class="circle"></div>
+              </div>
+            </div>
+            <div class="schema-table_row">
+              <div style="padding: 0 10px;">field (type)</div>
+              <div class="field-hook" data-id="2">
+                <div class="circle"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="schema-table">
+            <div class="schema-table_row">
+              <div style="padding: 0 10px;">field (type)</div>
+              <div class="field-hook" data-id="3">
+                <div class="circle"></div>
+              </div>
+            </div>
+            <div class="schema-table_row">
+              <div style="padding: 0 10px;">field (type)</div>
+              <div class="field-hook" data-id="4">
+                <div class="circle"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="table-column" style="position: absolute; right: 200px; top: 100px; display: flex; flex-direction: column; gap: 20px">
+          <div class="schema-table reverse">
+            <div class="schema-table_row">
+              <div style="padding: 0 10px;">field (type)</div>
+              <div class="field-hook" data-id="5">
+                <div class="circle"></div>
+              </div>
+            </div>
+            <div class="schema-table_row">
+              <div style="padding: 0 10px;">field (type)</div>
+              <div class="field-hook" data-id="6">
+                <div class="circle"></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+    </div>
     </div>
   </main>
   <script src="./index.js"></script>

@@ -20,13 +20,84 @@ body {
 }
 
 .circle {
-  border: 1px solid gray;
+  background-color: white;
   border-radius: 50%;
-  position: absolute;
-  width: 20px;
-  height: 20px;
+  width: 15px;
+  height: 15px;
 }
 
 .circle:hover {
   cursor: pointer;
+}
+
+.field-hook {
+  background-color: #33ACFE; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center;
+  width: 28px;
+}
+
+.schema-table > div:nth-child(n+1) {
+  border-bottom: none;
+}
+
+.schema-table > div:first-child {
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+}
+
+.schema-table:not(.reverse) > div:first-child .field-hook {
+  border-top-right-radius: 10px;
+}
+
+.schema-table > div:last-child {
+  border: 1px solid black;
+  border-bottom-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+.schema-table:not(.reverse) > div:last-child .field-hook {
+  border-bottom-right-radius: 10px;
+}
+
+.schema-table_row {
+  border: 1px solid black;
+  display: flex;
+  justify-content: space-between;
+  height: 28px;
+  width: 150px;
+}
+
+.schema-table.reverse > .schema-table_row {
+  justify-content: left;
+  flex-direction: row-reverse;
+}
+
+.schema-table.reverse > div:first-child .field-hook {
+  border-top-left-radius: 10px;
+}
+
+.schema-table.reverse > div:last-child .field-hook {
+  border-bottom-left-radius: 10px;
+}
+
+.circle:hover {
+  cursor: pointer;
+}
+
+.canvas-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.canvas-wrapp {
+  position: relative;
+}
+
+#canvas {
+  border: 1px solid gray;
 }
